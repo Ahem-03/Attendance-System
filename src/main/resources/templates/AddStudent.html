@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Add Student</title>
+
+</head>
+<body>
+<nav>
+    <h1>🎓 Attendance System</h1>
+    <a href="/">Home</a>
+    <a href="/attendance/mark">Mark Attendance</a>
+    <a href="/attendance/report">Report</a>
+    <a href="/students/add" class="active">Add Student</a>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h2>➕ Add New Student</h2>
+        <form method="post" action="/students/add" th:object="${student}">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" th:field="*{name}" placeholder="e.g. Rahul Sharma" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Roll Number</label>
+                <input type="text" th:field="*{rollNumber}" placeholder="e.g. BCA2024004" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" th:field="*{email}" placeholder="e.g. rahul@college.edu" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Course</label>
+                <select th:field="*{course}">
+                    <option value="BCA">BCA</option>
+                    <option value="MCA">MCA</option>
+                    <option value="BSc CS">BSc CS</option>
+                    <option value="BCA (Hons)">BCA (Hons)</option>
+                </select>
+            </div>
+
+            <div class="btn-row">
+                <a href="/" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
