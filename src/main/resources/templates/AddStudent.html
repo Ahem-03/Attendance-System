@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Add Student</title>
 
+    <link rel="stylesheet" th:href="@{/css/style.css}">x
 </head>
 <body>
 <nav>
@@ -18,7 +19,7 @@
 <div class="container">
     <div class="card">
         <h2>➕ Add New Student</h2>
-        <form method="post" action="/students/add" th:object="${student}">
+        <form method="post" th:action="@{addForm}" th:object="${studentData}">
 
             <div class="form-group">
                 <label>Full Name</label>
