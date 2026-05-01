@@ -11,7 +11,7 @@
 <nav>
     <h1>🎓 Attendance System</h1>
     <a href="/">Home</a>
-    <a href="/attendance/mark">Mark Attendance</a>
+    <a th:href="@{/markPage}">Mark Attendance</a>
     <a href="/attendance/report">Report</a>
     <a href="/students/add" class="active">Add Student</a>
 </nav>
@@ -19,7 +19,7 @@
 <div class="container">
     <div class="card">
         <h2>➕ Add New Student</h2>
-        <form method="post" th:action="@{addForm}" th:object="${studentData}">
+        <form method="post" th:action="@{/addForm}" th:object="${studentData}">
 
             <div class="form-group">
                 <label>Full Name</label>

@@ -32,4 +32,10 @@ public class MyController {
         }
             return  "redirect:/";
     }
+
+    @GetMapping("/markPage")
+    public  String markAttendance(Model model){
+        model.addAttribute("students" , new Students());
+        return "markAttendance";
+    }
 }

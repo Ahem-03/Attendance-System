@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Mark Attendance</title>
+    <link rel="stylesheet" th:href="@{/css/style2.css}"/>
+</head>
+<body>
+
+<nav>
+    <h1>🎓 Attendance System</h1>
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/attendance/mark}" class="active">Mark Attendance</a>
+    <a th:href="@{/attendance/report}">Report</a>
+    <a th:href="@{/students/add}">Add Student</a>
+</nav>
+
+<div class="container">
+
+    <!-- Flash messages from RedirectAttributes -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+    <div th:if="${alreadyMarked}" class="alert alert-info">
+        Attendance has already been marked for today. You can still mark for a different date.
+    </div>
+
+    <div class="card">
+        <h2>📋 Mark Attendance</h2>
+
+        <form method="post" th:action="@{/attendance/mark}">
+
+            <!-- Date & Subject -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" th:value="${today}" required/>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject"
+                           placeholder="e.g. Data Structures" required/>
+                </div>
+            </div>
+
+            <!-- Live stats -->
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-num" id="totalCount"
+                         th:text="${#lists.size(students)}">0</div>
+                    <div class="stat-lbl">Total</div>
+                </div>
+                <div class="stat stat-present">
+                    <div class="stat-num" id="presentCount">0</div>
+                    <div class="stat-lbl">Present</div>
+                </div>
+                <div class="stat stat-absent">
+                    <div class="stat-num" id="absentCount"
+                         th:text="${#lists.size(students)}">0</div>
+                    <div class="stat-lbl">Absent</div>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Mark all buttons -->
+            <div class="mark-all">
+                <button type="button" class="btn-sm btn-present" onclick="markAll(true)">
+                    ✓ Mark All Present
+                </button>
+                <button type="button" class="btn-sm btn-absent" onclick="markAll(false)">
+                    ✗ Mark All Absent
+                </button>
+            </div>
+
+            <!-- Student list -->
+            <div class="student-list">
+                <div class="student-list-header">
+                    <span>Student</span>
+                    <span>Present / Absent</span>
+                </div>
+
+                <div th:each="student : ${students}" class="student-row">
+                    <div class="student-info">
+                        <div class="name"    th:text="${student.name}">Name</div>
+                        <div class="roll"    th:text="${student.rollNumber}">Roll</div>
+                        <span class="course-badge"
+                              th:classappend="${student.course == 'BCA'} ? 'badge-bca' :
+                                              (${student.course == 'MCA'} ? 'badge-mca' :
+                                              (${student.course == 'BSc CS'} ? 'badge-bscc' : 'badge-bcahons'))"
+                              th:text="${student.course}">Course</span>
+                    </div>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label absent"
+                              th:id="'lbl-' + ${student.id}">Absent</span>
+                        <label class="switch">
+                            <input type="checkbox"
+                                   name="presentIds"
+                                   th:value="${student.id}"
+                                   th:id="'chk-' + ${student.id}"
+                                   onchange="updateLabel(this)"/>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Attendance</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const total = document.querySelectorAll('input[name="presentIds"]').length;
+
+    function updateLabel(checkbox) {
+        const id = checkbox.id.replace('chk-', '');
+        const lbl = document.getElementById('lbl-' + id);
+        if (checkbox.checked) {
+            lbl.textContent = 'Present';
+            lbl.className = 'toggle-label present';
+        } else {
+            lbl.textContent = 'Absent';
+            lbl.className = 'toggle-label absent';
+        }
+        updateStats();
+    }
+
+    function markAll(present) {
+        document.querySelectorAll('input[name="presentIds"]').forEach(function (cb) {
+            cb.checked = present;
+            updateLabel(cb);
+        });
+    }
+
+    function updateStats() {
+        const presentCount = document.querySelectorAll('input[name="presentIds"]:checked').length;
+        const absentCount  = total - presentCount;
+        document.getElementById('presentCount').textContent = presentCount;
+        document.getElementById('absentCount').textContent  = absentCount;
+        document.getElementById('progressFill').style.width = (total > 0 ? (presentCount / total * 100) : 0) + '%';
+    }
+
+    updateStats();
+</script>
+</body>
+</html>
