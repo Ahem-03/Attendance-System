@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
 public class MyController {
 
@@ -33,9 +35,16 @@ public class MyController {
             return  "redirect:/";
     }
 
+    @GetMapping("/addstudents")
+    public  String addStudentPageFromMark(Model model){
+        model.addAttribute("studentData", new Students());
+        return "AddStudent";
+    }
+
     @GetMapping("/markPage")
     public  String markAttendance(Model model){
-        model.addAttribute("students" , new Students());
+        model.addAttribute("students" , studentService.getAllStudent());
+        model.addAttribute("today" , java.time.LocalDate.now().toString());
         return "markAttendance";
     }
 }

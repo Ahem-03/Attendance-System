@@ -48,6 +48,7 @@ public class Students {
         this.course = course;
     }
 
+    @Column
     private String course;
 
     public long getId() {

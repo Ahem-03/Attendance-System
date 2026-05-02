@@ -5,6 +5,8 @@ import com.example.AttendanceSystem.Repositry.StudentRepositry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StudentServiceIMPL implements StudentService{
 
@@ -20,5 +22,10 @@ public class StudentServiceIMPL implements StudentService{
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Students> getAllStudent() {
+        return studentRepositry.findAll();
     }
 }

@@ -51,6 +51,11 @@
                 <button type="submit" class="btn btn-primary">Add Student</button>
             </div>
         </form>
+
+        <!-- Flash messages from RedirectAttributes -->
+        <div th:if="${succesMSG}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${errorMSG}"   class="alert alert-error"   th:text="${error}"></div>
+
     </div>
 </div>
 </body>
