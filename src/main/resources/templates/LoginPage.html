@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Login - Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style3.css}">
+</head>
+<body>
+
+<div class="wrap">
+
+    <!-- Brand -->
+    <div class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+        </div>
+        <h1>Attendance System</h1>
+        <p>Sign in or create an account to continue</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+        <div class="accent-bar" id="accentBar"></div>
+
+        <!-- Flash messages -->
+        <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Role tabs -->
+        <div class="role-tabs">
+            <button type="button" class="role-tab active" id="tabStudent" onclick="setRole('student')">🎓 Student</button>
+            <button type="button" class="role-tab"        id="tabTeacher" onclick="setRole('teacher')">📋 Teacher</button>
+        </div>
+
+        <!-- Mode tabs -->
+        <div class="mode-tabs">
+            <button type="button" class="mode-tab active" id="modeLogin"  onclick="setMode('login')">Sign in</button>
+            <button type="button" class="mode-tab"        id="modeSignup" onclick="setMode('signup')">Sign up</button>
+        </div>
+
+        <!-- Badge -->
+        <div id="badgeWrap"></div>
+
+        <!-- ── LOGIN FORM ── -->
+        <div id="loginForm">
+            <form method="post" th:action="@{/login}">
+                <input type="hidden" name="role" id="loginRole" value="student"/>
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" name="username" id="loginEmail" placeholder="Enter your email" required/>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter your password" required/>
+                </div>
+                <div class="forgot">Forgot password?</div>
+                <button type="submit" class="btn-submit blue" id="loginBtn">Sign in</button>
+            </form>
+            <div class="footer-link">
+                Don't have an account?
+                <a href="#" onclick="setMode('signup'); return false;" id="toSignup">Sign up</a>
+            </div>
+        </div>
+
+        <!-- ── SIGNUP FORM ── -->
+        <div id="signupForm" style="display:none;">
+            <form method="post" th:action="@{/register}">
+                <input type="hidden" name="role" id="signupRole" value="STUDENT"/>
+
+                <div class="row2">
+                    <div class="form-group">
+                        <label>First name</label>
+                        <input type="text" name="firstName" placeholder="First name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Last name</label>
+                        <input type="text" name="lastName" placeholder="Last name" required/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" name="email" placeholder="Enter your email" required/>
+                </div>
+
+                <!-- Student fields -->
+                <div id="studentFields">
+                    <div class="form-group">
+                        <label>Roll number</label>
+                        <input type="text" name="rollNumber" placeholder="e.g. BCA-2024-042"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Course</label>
+                        <select name="course">
+                            <option value="">Select course</option>
+                            <option value="BCA">BCA</option>
+                            <option value="MCA">MCA</option>
+                            <option value="BSc CS">BSc CS</option>
+                            <option value="BCA Hons">BCA Hons</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Teacher fields -->
+                <div id="teacherFields" style="display:none;">
+                    <div class="form-group">
+                        <label>Employee ID</label>
+                        <input type="text" name="employeeId" placeholder="e.g. T-2024-001"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select name="department">
+                            <option value="">Select department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="English">English</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Create a strong password" required/>
+                </div>
+
+                <button type="submit" class="btn-submit blue" id="signupBtn">Create account</button>
+            </form>
+            <div class="footer-link">
+                Already have an account?
+                <a href="#" onclick="setMode('login'); return false;" id="toLogin">Sign in</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let role = 'student';
+    let mode = 'login';
+
+    function setRole(r) {
+        role = r;
+        const isTeacher = r === 'teacher';
+
+        document.getElementById('tabStudent').className = 'role-tab' + (r === 'student' ? ' active' : '');
+        document.getElementById('tabTeacher').className = 'role-tab' + (r === 'teacher' ? ' active' : '');
+
+        document.getElementById('accentBar').style.background = isTeacher ? '#3B6D11' : '#2563eb';
+        document.getElementById('loginRole').value  = r;
+        document.getElementById('signupRole').value = isTeacher ? 'TEACHER' : 'STUDENT';
+
+        document.getElementById('loginBtn').className  = 'btn-submit ' + (isTeacher ? 'green' : 'blue');
+        document.getElementById('signupBtn').className = 'btn-submit ' + (isTeacher ? 'green' : 'blue');
+
+        document.getElementById('studentFields').style.display = isTeacher ? 'none' : 'block';
+        document.getElementById('teacherFields').style.display = isTeacher ? 'block' : 'none';
+
+        document.getElementById('toSignup').className = isTeacher ? 'green' : '';
+        document.getElementById('toLogin').className  = isTeacher ? 'green' : '';
+
+        updateBadge();
+    }
+
+    function setMode(m) {
+        mode = m;
+        const isTeacher = role === 'teacher';
+
+        document.getElementById('modeLogin').className  = 'mode-tab' + (m === 'login'  ? ' active' + (isTeacher ? ' green' : '') : '');
+        document.getElementById('modeSignup').className = 'mode-tab' + (m === 'signup' ? ' active' + (isTeacher ? ' green' : '') : '');
+
+        document.getElementById('loginForm').style.display  = m === 'login'  ? 'block' : 'none';
+        document.getElementById('signupForm').style.display = m === 'signup' ? 'block' : 'none';
+    }
+
+    function updateBadge() {
+        const isTeacher = role === 'teacher';
+        document.getElementById('badgeWrap').innerHTML = isTeacher
+            ? '<span class="badge badge-teacher">📋 Teacher portal</span>'
+            : '<span class="badge badge-student">🎓 Student portal</span>';
+    }
+
+    updateBadge();
+    document.getElementById('accentBar').style.background = '#2563eb';
+</script>
+</body>
+</html>

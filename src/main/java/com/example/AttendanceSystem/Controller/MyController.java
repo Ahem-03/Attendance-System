@@ -20,7 +20,7 @@ public class MyController {
     @GetMapping("/")
     public String AddStudentPage(Model model){
         model.addAttribute("studentData", new Students());
-        return "AddStudent";
+        return "LoginPage";
     }
 
     @PostMapping("/addForm")
