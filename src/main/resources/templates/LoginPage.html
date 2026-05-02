@@ -5,7 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Login - Attendance System</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" th:href="@{/css/style3.css}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .wrap { width: 100%; max-width: 440px; }
+
+        /* ── BRAND ── */
+        .brand { text-align: center; margin-bottom: 2rem; }
+        .brand-icon {
+            width: 52px; height: 52px;
+            background: #2563eb;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .brand-icon svg { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .brand h1 { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; color: #1a1a2e; }
+        .brand p  { font-size: 13px; color: #666; margin-top: 4px; }
+
+        /* ── CARD ── */
+        .card {
+            background: #fff;
+            border: 0.5px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 28px;
+            overflow: hidden;
+        }
+
+        /* ── ACCENT BAR ── */
+        .accent-bar {
+            height: 3px;
+            margin: -28px -28px 28px -28px;
+            background: #2563eb;
+            transition: background 0.3s;
+        }
+
+        /* ── ROLE TABS ── */
+        .role-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: #f0f2f5;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+        .role-tab {
+            padding: 9px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            background: transparent;
+            color: #888;
+            transition: all 0.2s;
+        }
+        .role-tab.active {
+            background: #fff;
+            color: #1a1a2e;
+            border: 0.5px solid #e0e0e0;
+        }
+
+        /* ── MODE TABS ── */
+        .mode-tabs {
+            display: flex;
+            border-bottom: 0.5px solid #e0e0e0;
+            margin-bottom: 22px;
+        }
+        .mode-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #888;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -0.5px;
+            transition: all 0.2s;
+        }
+        .mode-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .mode-tab.active.green { color: #3B6D11; border-bottom-color: #3B6D11; }
+
+        /* ── BADGE ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+        .badge-student { background: #E6F1FB; color: #0C447C; }
+        .badge-teacher { background: #EAF3DE; color: #27500A; }
+
+        /* ── FORM ── */
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            height: 40px;
+            padding: 0 12px;
+            border: 0.5px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            color: #1a1a2e;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .form-group input.green:focus,
+        .form-group select.green:focus {
+            border-color: #3B6D11;
+            box-shadow: 0 0 0 3px rgba(59,109,17,0.1);
+        }
+
+        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* ── FORGOT ── */
+        .forgot {
+            text-align: right;
+            font-size: 12px;
+            color: #2563eb;
+            cursor: pointer;
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+        .forgot:hover { text-decoration: underline; }
+
+        /* ── BUTTONS ── */
+        .btn-submit {
+            width: 100%;
+            height: 43px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            margin-top: 6px;
+            color: #fff;
+        }
+        .btn-submit.blue  { background: #2563eb; }
+        .btn-submit.blue:hover  { background: #1d4ed8; }
+        .btn-submit.green { background: #3B6D11; }
+        .btn-submit.green:hover { background: #27500A; }
+        .btn-submit:active { transform: scale(0.99); }
+
+        /* ── FOOTER ── */
+        .footer-link { text-align: center; font-size: 12px; color: #888; margin-top: 16px; }
+        .footer-link a { color: #2563eb; font-weight: 500; text-decoration: none; }
+        .footer-link a:hover { text-decoration: underline; }
+        .footer-link a.green { color: #3B6D11; }
+
+        /* ── ALERTS ── */
+        .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+        .alert-error   { background: #fcebeb; color: #a32d2d; border: 0.5px solid #f7c1c1; }
+        .alert-success { background: #eaf3de; color: #3b6d11; border: 0.5px solid #c0dd97; }
+
+        @media (max-width: 480px) {
+            .row2 { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
@@ -37,10 +232,11 @@
             <button type="button" class="role-tab"        id="tabTeacher" onclick="setRole('teacher')">📋 Teacher</button>
         </div>
 
-        <!-- Mode tabs -->
+        <!-- Mode tabs — Sign up only visible for Teacher -->
         <div class="mode-tabs">
             <button type="button" class="mode-tab active" id="modeLogin"  onclick="setMode('login')">Sign in</button>
-            <button type="button" class="mode-tab"        id="modeSignup" onclick="setMode('signup')">Sign up</button>
+            <button type="button" class="mode-tab" id="modeSignup" onclick="setMode('signup')"
+                    style="display:none;">Sign up</button>
         </div>
 
         <!-- Badge -->
@@ -61,7 +257,8 @@
                 <div class="forgot">Forgot password?</div>
                 <button type="submit" class="btn-submit blue" id="loginBtn">Sign in</button>
             </form>
-            <div class="footer-link">
+            <!-- Only teachers can sign up — hidden for students -->
+            <div class="footer-link" id="signupFooter" style="display:none;">
                 Don't have an account?
                 <a href="#" onclick="setMode('signup'); return false;" id="toSignup">Sign up</a>
             </div>
@@ -72,15 +269,9 @@
             <form method="post" th:action="@{/register}">
                 <input type="hidden" name="role" id="signupRole" value="STUDENT"/>
 
-                <div class="row2">
-                    <div class="form-group">
-                        <label>First name</label>
-                        <input type="text" name="firstName" placeholder="First name" required/>
-                    </div>
-                    <div class="form-group">
-                        <label>Last name</label>
-                        <input type="text" name="lastName" placeholder="Last name" required/>
-                    </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" placeholder="e.g. Rahul Sharma" required/>
                 </div>
 
                 <div class="form-group">
@@ -108,10 +299,6 @@
 
                 <!-- Teacher fields -->
                 <div id="teacherFields" style="display:none;">
-                    <div class="form-group">
-                        <label>Employee ID</label>
-                        <input type="text" name="employeeId" placeholder="e.g. T-2024-001"/>
-                    </div>
                     <div class="form-group">
                         <label>Department</label>
                         <select name="department">
@@ -163,6 +350,13 @@
 
         document.getElementById('toSignup').className = isTeacher ? 'green' : '';
         document.getElementById('toLogin').className  = isTeacher ? 'green' : '';
+
+        // Show Sign up tab only for teacher, hide for student
+        document.getElementById('modeSignup').style.display   = isTeacher ? 'block' : 'none';
+        document.getElementById('signupFooter').style.display = isTeacher ? 'block' : 'none';
+
+        // If student switches back, force mode back to login
+        if (!isTeacher) setMode('login');
 
         updateBadge();
     }

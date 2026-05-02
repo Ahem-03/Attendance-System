@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Attendance Report</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #333; }
+        nav { background: #1a73e8; padding: 0 24px; display: flex; align-items: center; gap: 24px; height: 56px; }
+        nav h1 { color: #fff; font-size: 18px; font-weight: 600; flex: 1; }
+        nav a { color: rgba(255,255,255,0.88); text-decoration: none; font-size: 14px; padding: 6px 12px;
+                border-radius: 4px; transition: background 0.2s; }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+        nav a.active { background: rgba(255,255,255,0.25); color: #fff; }
+
+        .container { max-width: 900px; margin: 32px auto; padding: 0 20px; }
+
+        /* FILTER BAR */
+        .filter-card { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+                       padding: 20px 24px; margin-bottom: 20px; }
+        .filter-card h2 { font-size: 16px; margin-bottom: 14px; color: #444; }
+        .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 13px; font-weight: 600; color: #555; }
+        input[type="date"], select {
+            padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px;
+            font-size: 14px; font-family: inherit; outline: none;
+        }
+        input:focus, select:focus { border-color: #1a73e8; box-shadow: 0 0 0 2px rgba(26,115,232,0.15); }
+        .btn { padding: 9px 20px; background: #1a73e8; color: #fff; border: none; border-radius: 5px;
+               font-size: 14px; cursor: pointer; font-family: inherit; font-weight: 600; }
+        .btn:hover { background: #1558b0; }
+
+        /* SUMMARY CARDS */
+        .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+        .stat-card { background: #fff; border-radius: 10px; padding: 18px; text-align: center;
+                     box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .stat-card .num { font-size: 28px; font-weight: 700; color: #1a73e8; }
+        .stat-card .lbl { font-size: 12px; color: #888; margin-top: 4px; }
+
+        /* TABLE */
+        .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow: hidden; }
+        .card-header { padding: 14px 20px; border-bottom: 1px solid #eee; font-size: 15px; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 10px 16px; text-align: left; font-size: 13px;
+             color: #555; font-weight: 600; border-bottom: 1px solid #eee; }
+        td { padding: 11px 16px; font-size: 14px; border-bottom: 1px solid #f2f2f2; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafbff; }
+
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-present { background: #d4edda; color: #155724; }
+        .badge-absent  { background: #f8d7da; color: #721c24; }
+        .badge-good    { background: #d4edda; color: #155724; }
+        .badge-warn    { background: #fff3cd; color: #856404; }
+        .badge-bad     { background: #f8d7da; color: #721c24; }
+
+        .empty { text-align: center; padding: 32px; color: #aaa; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>🎓 Attendance System</h1>
+    <a href="/">Home</a>
+    <a href="/attendance/mark">Mark Attendance</a>
+    <a href="@{reportAttendance}" class="active">Report</a>
+    <a th:href="@{/students/add}">Add Student</a>
+</nav>
+
+<div class="container">
+
+    <!-- FILTER FORM -->
+    <div class="filter-card">
+        <h2>🔍 Filter Report</h2>
+        <form method="get" action="/attendance/report">
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>By Date</label>
+                    <input type="date" name="date" th:value="${filterDate}"/>
+                </div>
+                <div class="form-group">
+                    <label>By Student</label>
+                    <select name="studentId">
+                        <option value="">-- All Students --</option>
+                        <option th:each="s : ${students}"
+                                th:value="${s.id}"
+                                th:text="${s.name + ' (' + s.rollNumber + ')'}"
+                                th:selected="${s.id == selectedStudentId}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">View Report</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ATTENDANCE SUMMARY PER STUDENT -->
+    <div class="summary-row">
+        <div class="stat-card">
+            <div class="num" th:text="${records != null ? records.size() : 0}">0</div>
+            <div class="lbl">Records Found</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" style="color:#28a745;"
+                 th:text="${records != null ? records.stream().filter(r -> r.status.name() == 'PRESENT').count() : 0}">0</div>
+            <div class="lbl">Present</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" style="color:#dc3545;"
+                 th:text="${records != null ? records.stream().filter(r -> r.status.name() == 'ABSENT').count() : 0}">0</div>
+            <div class="lbl">Absent</div>
+        </div>
+    </div>
+
+    <!-- RESULTS TABLE -->
+    <div class="card">
+        <div class="card-header">
+            Attendance Records
+            <span th:if="${filterDate}" th:text="' — ' + ${filterDate}" style="color:#1a73e8;"></span>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Student Name</th>
+                <th>Roll Number</th>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rec, iter : ${records}">
+                <td th:text="${iter.count}">1</td>
+                <td><strong th:text="${rec.student.name}">Name</strong></td>
+                <td th:text="${rec.student.rollNumber}">Roll</td>
+                <td th:text="${rec.date}">2024-01-01</td>
+                <td th:text="${rec.subject ?: '-'}">Subject</td>
+                <td>
+                        <span th:class="${rec.status.name() == 'PRESENT' ? 'badge badge-present' : 'badge badge-absent'}"
+                              th:text="${rec.status}">STATUS</span>
+                </td>
+            </tr>
+            <tr th:if="${records == null or records.isEmpty()}">
+                <td colspan="6" class="empty">No attendance records found for the selected filter.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- OVERALL ATTENDANCE % TABLE -->
+    <div class="card" style="margin-top:20px;">
+        <div class="card-header">Overall Attendance Summary</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Student</th>
+                <th>Roll Number</th>
+                <th>Attendance %</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="student : ${students}">
+                <td th:text="${student.name}">Name</td>
+                <td th:text="${student.rollNumber}">Roll</td>
+                <td th:with="pct=${percentages[student.id] ?: 0}" th:text="${pct + '%'}">0%</td>
+                <td>
+                        <span th:with="pct=${percentages[student.id] ?: 0}"
+                              th:class="${pct >= 75 ? 'badge badge-good' : (pct >= 50 ? 'badge badge-warn' : 'badge badge-bad')}"
+                              th:text="${pct >= 75 ? 'Good' : (pct >= 50 ? 'Warning' : 'Critical')}">
+                        </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
