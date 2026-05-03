@@ -8,4 +8,6 @@ import java.util.List;
 public interface StudentService {
     public  boolean saveStudent(Students students);
     public List<Students> getAllStudent();
+
+    Students validStudent(String email, String password);
 }

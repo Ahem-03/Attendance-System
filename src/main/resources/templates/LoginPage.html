@@ -100,7 +100,7 @@
             margin-bottom: -0.5px;
             transition: all 0.2s;
         }
-        .mode-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .mode-tab.active       { color: #2563eb; border-bottom-color: #2563eb; }
         .mode-tab.active.green { color: #3B6D11; border-bottom-color: #3B6D11; }
 
         /* ── BADGE ── */
@@ -153,8 +153,6 @@
             box-shadow: 0 0 0 3px rgba(59,109,17,0.1);
         }
 
-        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
         /* ── FORGOT ── */
         .forgot {
             text-align: right;
@@ -180,11 +178,11 @@
             margin-top: 6px;
             color: #fff;
         }
-        .btn-submit.blue  { background: #2563eb; }
+        .btn-submit.blue        { background: #2563eb; }
         .btn-submit.blue:hover  { background: #1d4ed8; }
-        .btn-submit.green { background: #3B6D11; }
+        .btn-submit.green       { background: #3B6D11; }
         .btn-submit.green:hover { background: #27500A; }
-        .btn-submit:active { transform: scale(0.99); }
+        .btn-submit:active      { transform: scale(0.99); }
 
         /* ── FOOTER ── */
         .footer-link { text-align: center; font-size: 12px; color: #888; margin-top: 16px; }
@@ -232,11 +230,10 @@
             <button type="button" class="role-tab"        id="tabTeacher" onclick="setRole('teacher')">📋 Teacher</button>
         </div>
 
-        <!-- Mode tabs — Sign up only visible for Teacher -->
+        <!-- Mode tabs — both always visible ✅ -->
         <div class="mode-tabs">
             <button type="button" class="mode-tab active" id="modeLogin"  onclick="setMode('login')">Sign in</button>
-            <button type="button" class="mode-tab" id="modeSignup" onclick="setMode('signup')"
-                    style="display:none;">Sign up</button>
+            <button type="button" class="mode-tab"        id="modeSignup" onclick="setMode('signup')">Sign up</button>
         </div>
 
         <!-- Badge -->
@@ -245,10 +242,12 @@
         <!-- ── LOGIN FORM ── -->
         <div id="loginForm">
             <form method="post" th:action="@{/login}">
+                <!-- ✅ name="role" sends role value to controller -->
                 <input type="hidden" name="role" id="loginRole" value="student"/>
                 <div class="form-group">
                     <label>Email address</label>
-                    <input type="email" name="username" id="loginEmail" placeholder="Enter your email" required/>
+                    <!-- ✅ name="email" matches @RequestParam("email") in controller -->
+                    <input type="email" name="email" id="loginEmail" placeholder="Enter your email" required/>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
@@ -257,8 +256,8 @@
                 <div class="forgot">Forgot password?</div>
                 <button type="submit" class="btn-submit blue" id="loginBtn">Sign in</button>
             </form>
-            <!-- Only teachers can sign up — hidden for students -->
-            <div class="footer-link" id="signupFooter" style="display:none;">
+            <!-- ✅ Always visible — no display:none -->
+            <div class="footer-link" id="signupFooter">
                 Don't have an account?
                 <a href="#" onclick="setMode('signup'); return false;" id="toSignup">Sign up</a>
             </div>
@@ -351,13 +350,11 @@
         document.getElementById('toSignup').className = isTeacher ? 'green' : '';
         document.getElementById('toLogin').className  = isTeacher ? 'green' : '';
 
-        // Show Sign up tab only for teacher, hide for student
-        document.getElementById('modeSignup').style.display   = isTeacher ? 'block' : 'none';
-        document.getElementById('signupFooter').style.display = isTeacher ? 'block' : 'none';
+        // ✅ Sign up tab always visible for BOTH student and teacher
+        document.getElementById('modeSignup').style.display   = 'block';
+        document.getElementById('signupFooter').style.display = 'block';
 
-        // If student switches back, force mode back to login
-        if (!isTeacher) setMode('login');
-
+        // ✅ Do NOT force back to login when switching roles
         updateBadge();
     }
 

@@ -28,4 +28,9 @@ public class StudentServiceIMPL implements StudentService{
     public List<Students> getAllStudent() {
         return studentRepositry.findAll();
     }
+
+    @Override
+    public Students validStudent(String email, String password) {
+        return  studentRepositry.findByEmailAndPassword(email, password);
+    }
 }

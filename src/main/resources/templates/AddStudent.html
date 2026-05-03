@@ -4,155 +4,86 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Add Student</title>
-
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+
 <nav>
     <h1>🎓 Attendance System</h1>
     <a href="/">Home</a>
     <a th:href="@{/markPage}">Mark Attendance</a>
     <a th:href="@{/reportAttendance}">Report</a>
-    <a href="/students/add" class="active">Add Student</a>
+    <a href="/addstudents" class="active">Add Student</a>
 
-    <!-- Login / User menu -->
-    <div class="nav-user">
-        <div class="nav-avatar" onclick="toggleUserMenu()" title="Account">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- User menu — self-contained with inline positioning -->
+    <div style="position:relative; margin-left:auto;">
+        <div onclick="toggleUserMenu()" style="
+            width:36px; height:36px; border-radius:50%;
+            background:rgba(255,255,255,0.2);
+            border:1.5px solid rgba(255,255,255,0.4);
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="#fff" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="8" r="4"/>
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
             </svg>
         </div>
-        <div class="user-dropdown" id="userDropdown">
-            <div class="user-dropdown-header">
-                <div class="user-dropdown-icon">🧑‍🏫</div>
+
+        <div id="userDropdown" style="
+            display:none; position:absolute;
+            top:46px; right:0;
+            width:200px; background:#fff;
+            border:1px solid #e0e0e0;
+            border-radius:12px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.15);
+            z-index:9999; overflow:hidden;">
+
+            <!-- Header -->
+            <div style="display:flex; align-items:center; gap:10px; padding:14px;">
+                <div style="width:36px;height:36px;background:#EAF3DE;border-radius:50%;
+                            display:flex;align-items:center;justify-content:center;font-size:16px;">
+                    🧑‍🏫
+                </div>
                 <div>
-                    <!-- Replace with th:text="${session.userName}" if using session -->
-                    <div class="user-dropdown-name" th:text="${session.userName} ?: 'Teacher'">Teacher</div>
-                    <div class="user-dropdown-role teacher-role">📋 Teacher</div>
+                    <div style="font-size:13px;font-weight:600;color:#1a1a2e;"
+                         th:text="${session.userName} ?: 'User'">User</div>
+                    <div style="font-size:11px;color:#3B6D11;font-weight:500;"
+                         th:text="${session.role == 'TEACHER' ? '📋 Teacher' : '🎓 Student'}">📋 Role</div>
                 </div>
             </div>
-            <div class="user-dropdown-divider"></div>
-            <a th:href="@{/profile}"  class="user-dropdown-item">👤 Profile</a>
-            <a th:href="@{/settings}" class="user-dropdown-item">⚙️ Settings</a>
-            <div class="user-dropdown-divider"></div>
-            <a th:href="@{/login}" class="user-dropdown-item user-dropdown-logout">🔓 Logout</a>
+
+            <div style="height:1px;background:#f0f0f0;"></div>
+
+            <a th:href="@{/profile}"  style="display:block;padding:10px 14px;font-size:13px;
+                color:#1a1a2e;text-decoration:none;" onmouseover="this.style.background='#f5f7ff'"
+               onmouseout="this.style.background='transparent'">👤 Profile</a>
+
+            <a th:href="@{/settings}" style="display:block;padding:10px 14px;font-size:13px;
+                color:#1a1a2e;text-decoration:none;" onmouseover="this.style.background='#f5f7ff'"
+               onmouseout="this.style.background='transparent'">⚙️ Settings</a>
+
+            <div style="height:1px;background:#f0f0f0;"></div>
+
+            <a th:href="@{/logout}"   style="display:block;padding:10px 14px;font-size:13px;
+                color:#a32d2d;text-decoration:none;" onmouseover="this.style.background='#fcebeb'"
+               onmouseout="this.style.background='transparent'">🔓 Logout</a>
         </div>
     </div>
 </nav>
-
-<style>
-    /* Nav user menu */
-    .nav-user { position: relative; margin-left: 8px; }
-
-    .nav-avatar {
-        width: 34px; height: 34px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        border: 1.5px solid rgba(255,255,255,0.4);
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer;
-        transition: background 0.15s;
-    }
-    .nav-avatar:hover { background: rgba(255,255,255,0.3); }
-    .nav-avatar svg { width: 18px; height: 18px; stroke: #fff; }
-
-    .user-dropdown {
-        display: none;
-        position: absolute;
-        top: calc(100% + 10px);
-        right: 0;
-        width: 210px;
-        background: #fff;
-        border: 0.5px solid #e0e0e0;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        z-index: 999;
-        overflow: hidden;
-    }
-    .user-dropdown.open { display: block; }
-
-    .user-dropdown-header {
-        display: flex; align-items: center; gap: 10px;
-        padding: 14px 14px 10px 14px;
-    }
-    .user-dropdown-icon {
-        width: 36px; height: 36px;
-        background: #EAF3DE;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 16px; flex-shrink: 0;
-    }
-    .user-dropdown-name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
-    .user-dropdown-role { font-size: 11px; color: #888; margin-top: 1px; }
-    .teacher-role       { color: #3B6D11 !important; font-weight: 500; }
-
-    .user-dropdown-divider { height: 0.5px; background: #f0f0f0; margin: 4px 0; }
-
-    .user-dropdown-item {
-        display: block; padding: 9px 14px;
-        font-size: 13px; color: #1a1a2e;
-        text-decoration: none; transition: background 0.1s;
-    }
-    .user-dropdown-item:hover { background: #f5f7ff; }
-    .user-dropdown-logout { color: #a32d2d !important; }
-    .user-dropdown-logout:hover { background: #fcebeb !important; }
-
-    /* Teacher-only access banner */
-    .teacher-banner {
-        display: flex; align-items: center; gap: 10px;
-        background: #EAF3DE;
-        border: 0.5px solid #c0dd97;
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin-bottom: 20px;
-        font-size: 13px;
-        color: #27500A;
-        font-weight: 500;
-    }
-    .teacher-banner svg {
-        width: 16px; height: 16px;
-        stroke: #3B6D11; flex-shrink: 0;
-    }
-
-    /* Access denied block — shown if not teacher -->
-    .access-denied {
-        text-align: center;
-        padding: 40px 20px;
-    }
-    .access-denied .lock-icon { font-size: 48px; margin-bottom: 12px; }
-    .access-denied h3 { font-size: 16px; font-weight: 600; color: #a32d2d; margin-bottom: 8px; }
-    .access-denied p  { font-size: 13px; color: #888; margin-bottom: 20px; }
-    .access-denied a  {
-        display: inline-block;
-        padding: 9px 20px;
-        background: #2563eb;
-        color: #fff;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        text-decoration: none;
-    }
-    .access-denied a:hover { background: #1d4ed8; }
-</style>
 
 <div class="container">
     <div class="card">
         <h2>➕ Add New Student</h2>
 
-        <!--
-            TEACHER-ONLY ACCESS LOGIC:
-            - If using Spring Security: replace condition with th:if="${#authorization.expression('hasRole(''TEACHER'')')}"
-            - If using session:         replace condition with th:if="${session.role == 'TEACHER'}"
-            - The example below uses session.role — change to match your auth setup
-        -->
-
-        <!-- ✅ Teacher sees this banner + form -->
-        <div th:if="${session.role == 'TEACHER' or true}">  <!-- remove 'or true' once auth is set up -->
+        <div th:if="${session.role == 'TEACHER'}">
 
             <div class="teacher-banner">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="#3B6D11" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round"
+                     style="flex-shrink:0;">
                     <rect x="2" y="3" width="20" height="14" rx="2"/>
                     <path d="M8 21h8M12 17v4"/>
                 </svg>
@@ -177,6 +108,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" th:field="*{password}" placeholder="Create a password" required/>
+                </div>
+
+                <div class="form-group">
                     <label>Course</label>
                     <select th:field="*{course}">
                         <option value="BCA">BCA</option>
@@ -190,21 +126,20 @@
                     <a href="/" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Add Student</button>
                 </div>
+
             </form>
 
-            <!-- Flash messages from RedirectAttributes -->
             <div th:if="${succesMSG}" class="alert alert-success" th:text="${succesMSG}"></div>
             <div th:if="${errorMSG}"  class="alert alert-error"   th:text="${errorMSG}"></div>
 
         </div>
 
-        <!-- ❌ Non-teacher sees access denied -->
-        <div th:unless="${session.role == 'TEACHER' or true}">  <!-- remove 'or true' once auth is set up -->
+        <div th:unless="${session.role == 'TEACHER' or true}">
             <div class="access-denied">
                 <div class="lock-icon">🔒</div>
                 <h3>Access Restricted</h3>
                 <p>Only teachers are allowed to add students.<br/>Please log in with a teacher account.</p>
-                <a th:href="@{/login}">Go to Login</a>
+                <a th:href="@{/}">Go to Login</a>
             </div>
         </div>
 
@@ -213,12 +148,14 @@
 
 <script>
     function toggleUserMenu() {
-        document.getElementById('userDropdown').classList.toggle('open');
+        const d = document.getElementById('userDropdown');
+        d.style.display = d.style.display === 'block' ? 'none' : 'block';
     }
     document.addEventListener('click', function(e) {
-        const navUser = document.querySelector('.nav-user');
-        if (navUser && !navUser.contains(e.target)) {
-            document.getElementById('userDropdown').classList.remove('open');
+        const menu = document.getElementById('userDropdown');
+        if (!e.target.closest('[onclick="toggleUserMenu()"]') &&
+            !e.target.closest('#userDropdown')) {
+            menu.style.display = 'none';
         }
     });
 </script>

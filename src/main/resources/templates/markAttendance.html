@@ -28,8 +28,8 @@
             <div class="user-dropdown-header">
                 <div class="user-dropdown-icon">👤</div>
                 <div>
-                    <div class="user-dropdown-name">My Account</div>
-                    <div class="user-dropdown-role">Student / Teacher</div>
+                    <div class="user-dropdown-name" th:text="${session.userName} ?: 'My Account'">My Account</div>
+                    <div class="user-dropdown-role" th:text="${session.role == 'TEACHER' ? 'Teacher' : (session.role == 'STUDENT' ? 'Student' : 'Student / Teacher')}">Student / Teacher</div>
                 </div>
             </div>
             <div class="user-dropdown-divider"></div>

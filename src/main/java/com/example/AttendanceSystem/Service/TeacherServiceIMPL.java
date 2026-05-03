@@ -21,4 +21,9 @@ public class TeacherServiceIMPL implements TeacherService {
             return false;
         }
     }
+
+    @Override
+    public Teacher validTeacher(String email, String password) {
+        return  teacherRepositry.findByEmailAndPassword(email, password);
+    }
 }

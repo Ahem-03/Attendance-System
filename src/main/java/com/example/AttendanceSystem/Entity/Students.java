@@ -15,6 +15,19 @@ public class Students {
     private String rollNumber;
     @Column
     private String email;
+    @Column
+    private  String password;
+    @Column
+    private String course;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 
     public String getName() {
         return name;
@@ -47,9 +60,6 @@ public class Students {
     public void setCourse(String course) {
         this.course = course;
     }
-
-    @Column
-    private String course;
 
     public long getId() {
         return id;
