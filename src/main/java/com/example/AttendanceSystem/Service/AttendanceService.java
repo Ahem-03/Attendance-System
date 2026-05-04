@@ -4,6 +4,7 @@ import com.example.AttendanceSystem.Entity.Students;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface AttendanceService {
     public void markAttendance(LocalDate localDate, List<Long> presentIds, List<Students> allStudent);
@@ -14,4 +15,6 @@ public interface AttendanceService {
     public long getPresentCount(long studentId);
     // ── Check if attendance already marked for this date ─────────
     public boolean isAlreadyMarked(LocalDate date);
+
+    public Map<Long, Double> getAttendancePercentageMap(List<Students> students);
 }

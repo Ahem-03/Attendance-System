@@ -18,13 +18,13 @@ nav {
     align-items: center;
     gap: 16px;
     height: 56px;
-    overflow: visible;   /* allows dropdown to show below nav */
+    overflow: visible;
 }
 nav h1 {
     color: #fff;
     font-size: 18px;
     font-weight: 600;
-    flex: 1;
+    margin-right: auto;    /* FIXED: was flex:1 which pushed all links off screen */
 }
 nav a {
     color: rgba(255,255,255,0.88);
@@ -50,10 +50,9 @@ nav a.active { background: rgba(255,255,255,0.25); color: #fff; }
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     padding: 32px;
 }
-.card > div {
-    margin: 0;
-    padding: 0;
-}
+
+/* REMOVED: .card > div rule — it was collapsing all form content */
+
 h2 {
     font-size: 20px;
     margin-bottom: 24px;
@@ -149,8 +148,8 @@ input:focus, select:focus {
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-    nav a { display: none; }
-    nav a.active { display: block; }
+    nav { gap: 8px; padding: 0 14px; }
+    nav a { font-size: 12px; padding: 5px 8px; }
     .container { margin: 20px auto; }
     .card      { padding: 20px; }
     .btn-row   { flex-direction: column; }

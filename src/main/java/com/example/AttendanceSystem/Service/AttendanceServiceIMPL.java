@@ -8,16 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
-public class AttendanceServiceIMPL implements AttendanceService{
+public class AttendanceServiceIMPL implements AttendanceService {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
 
     @Autowired
     private StudentRepositry studentRepositry;
+
     @Override
     public void markAttendance(LocalDate localDate, List<Long> presentIds, List<Students> allStudent) {
         for (Students s : allStudent) {
@@ -28,7 +31,6 @@ public class AttendanceServiceIMPL implements AttendanceService{
                     ? "PRESENT" : "ABSENT");
             attendanceRepository.save(a);
         }
-
     }
 
     @Override
@@ -41,16 +43,25 @@ public class AttendanceServiceIMPL implements AttendanceService{
 
     @Override
     public long getTotalClasses(long studentId) {
-        return  attendanceRepository.countByStudentId(studentId);
+        return attendanceRepository.countByStudentId(studentId);
     }
 
     @Override
     public long getPresentCount(long studentId) {
-        return attendanceRepository.countByStudentIdAndStatus(studentId, "Present");
+        return attendanceRepository.countByStudentIdAndStatus(studentId, "PRESENT");
     }
 
     @Override
     public boolean isAlreadyMarked(LocalDate date) {
         return attendanceRepository.existsByDate(date);
+    }
+
+    @Override
+    public Map<Long, Double> getAttendancePercentageMap(List<Students> students) {
+        Map<Long, Double> map = new HashMap<>();
+        for (Students s : students) {
+            map.put(s.getId(), getAttendancePercentage(s.getId()));
+        }
+        return map;
     }
 }
