@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>My Attendance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: #f0f4ff;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 0 32px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 2px 12px rgba(79,70,229,.3);
+        }
+        nav h1 { color: #fff; font-size: 18px; font-weight: 800; margin-right: auto; }
+        nav a  { color: rgba(255,255,255,.75); text-decoration: none; font-size: 14px; font-weight: 600; }
+        nav a:hover, nav a.active { color: #fff; }
+
+        .container {
+            max-width: 860px;
+            margin: 48px auto;
+            padding: 0 20px;
+        }
+
+        /* Greeting */
+        .greeting {
+            margin-bottom: 32px;
+        }
+        .greeting .tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4f46e5;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 4px 12px;
+            border-radius: 99px;
+            margin-bottom: 10px;
+        }
+        .greeting h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+        .greeting p { color: #666; margin-top: 4px; font-size: 14px; }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            text-align: center;
+        }
+        .stat-card .num {
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .stat-card .lbl {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #999;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+        .stat-card.pct  .num { color: #4f46e5; }
+        .stat-card.pres .num { color: #16a34a; }
+        .stat-card.abs  .num { color: #dc2626; }
+        .stat-card.tot  .num { color: #0369a1; }
+
+        /* Progress card */
+        .progress-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 28px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            margin-bottom: 28px;
+        }
+        .progress-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+        }
+        .progress-track {
+            background: #e0e7ff;
+            border-radius: 99px;
+            height: 14px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            transition: width .6s ease;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        /* Status badge */
+        .status-banner {
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-banner.safe    { background: #dcfce7; color: #15803d; }
+        .status-banner.warning { background: #fef9c3; color: #a16207; }
+        .status-banner.danger  { background: #fee2e2; color: #b91c1c; }
+
+        /* Info card */
+        .info-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        }
+        .info-card h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 16px; }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .key { color: #888; font-weight: 500; }
+        .info-row .val { font-weight: 700; color: #1a1a2e; font-family: 'DM Mono', monospace; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>🎓 Attendance System</h1>
+    <a th:href="@{/studentDashboard}" class="active">My Attendance</a>
+    <a th:href="@{/logoutStudent}">Logout</a>
+</nav>
+
+<div class="container">
+
+    <!-- Greeting -->
+    <div class="greeting">
+        <div class="tag">STUDENT DASHBOARD</div>
+        <h2 th:text="'Hello, ' + ${student.name} + ' 👋'">Hello!</h2>
+        <p>Here's your attendance summary for all classes.</p>
+    </div>
+
+    <!-- Status banner -->
+    <div class="status-banner"
+         th:classappend="${percentage >= 75} ? ' safe' : (${percentage >= 60} ? ' warning' : ' danger')">
+        <span th:if="${percentage >= 75}">✅ Great! Your attendance meets the required 75% criteria.</span>
+        <span th:if="${percentage < 75 and percentage >= 60}">⚠️ Your attendance is below 75%. Attend more classes!</span>
+        <span th:if="${percentage < 60}">🚨 Critical! Your attendance is very low. Immediate action needed.</span>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stats-grid">
+        <div class="stat-card pct">
+            <div class="num" th:text="${percentage} + '%'">0%</div>
+            <div class="lbl">Attendance %</div>
+        </div>
+        <div class="stat-card pres">
+            <div class="num" th:text="${present}">0</div>
+            <div class="lbl">Present</div>
+        </div>
+        <div class="stat-card abs">
+            <div class="num" th:text="${absent}">0</div>
+            <div class="lbl">Absent</div>
+        </div>
+        <div class="stat-card tot">
+            <div class="num" th:text="${total}">0</div>
+            <div class="lbl">Total Classes</div>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-card">
+        <h3>📊 Attendance Progress</h3>
+        <div class="progress-track">
+            <div class="progress-fill"
+                 th:style="'width:' + ${percentage} + '%'"></div>
+        </div>
+        <div class="progress-labels">
+            <span>0%</span>
+            <span th:text="${percentage} + '% attended'">0%</span>
+            <span>100%</span>
+        </div>
+    </div>
+
+    <!-- Student info -->
+    <div class="info-card">
+        <h3>👤 Student Information</h3>
+        <div class="info-row">
+            <span class="key">Full Name</span>
+            <span class="val" th:text="${student.name}">—</span>
+        </div>
+        <div class="info-row">
+            <span class="key">Roll Number</span>
+            <span class="val" th:text="${student.rollNumber}">—</span>
+        </div>
+        <div class="info-row">
+            <span class="key">Course</span>
+            <span class="val" th:text="${student.course}">—</span>
+        </div>
+        <div class="info-row">
+            <span class="key">Email</span>
+            <span class="val" th:text="${student.email}">—</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
